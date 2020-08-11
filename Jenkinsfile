@@ -1,9 +1,8 @@
 pipeline {
-    agent any
+    agent {
+        dockerfile true
+    }
     stages {
-        agent {
-            dockerfile true
-        }
         stage ('VCS'){
             steps {
                 dir ('TIMODIO') {
