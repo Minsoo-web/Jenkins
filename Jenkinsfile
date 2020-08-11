@@ -16,6 +16,7 @@ pipeline {
         stage ('RUN SERVER'){
             steps {
                 sh "cd FE"
+                sh "npm install"
                 sh "npm run serve"
             }
         }
