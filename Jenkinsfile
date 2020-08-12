@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     triggers {
-        cron('*/1 8-18 * * *')
+        cron('*/1 8-18 * * * %root %DEFAULT_PASSWORD %\*')
+        cron('*/1 8-18 * * * %user0 %!qwerty1 %regular')
     }
 
     stages {
