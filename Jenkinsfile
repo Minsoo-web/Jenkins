@@ -5,7 +5,7 @@ pipeline {
             steps {
                 sh "echo $env.id"
                 sh "echo $env.password"
-                sh "echo $env.build_target"
+                sh "echo $build_target"
             }
         }
     }
