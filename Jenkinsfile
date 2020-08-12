@@ -3,7 +3,6 @@ pipeline {
 
     triggers {
         cron('*/1 8-18 * * * %root %DEFAULT_PASSWORD %all')
-        cron('*/1 8-18 * * * %user0 %!qwerty1 %regular')
     }
 
     stages {
