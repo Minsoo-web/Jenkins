@@ -1,9 +1,9 @@
 pipeline {
     agent any
 
-    triggers {
-        cron('*/1 8-18 * * * %root %DEFAULT_PASSWORD %all')
-    }
+    // triggers {
+    //     cron('*/1 8-18 * * * %root %DEFAULT_PASSWORD %all')
+    // }
 
     stages {
         stage('SAY') {
