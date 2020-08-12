@@ -9,3 +9,4 @@ ENV HOME=/root
 
 COPY . .
 
+CMD [ "/bin/bash" ]
