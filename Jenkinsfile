@@ -1,17 +1,22 @@
 pipeline {
     agent any
 
-    // triggers {
-    //     cron('*/1 8-18 * * * %root %DEFAULT_PASSWORD %all')
-    // }
+    options {
+        ansiColor('xterm')
+    }
+
+    parameters {
+        choice(name:'ID', choices:['root','user0','QA'], description:'ID')
+        choice(name:'build_target', choices:['IRIS-E2E','IRIS-E2E-SAAS'] description:'Build_target')
+        String(name:'menu_target', defaultValue:'ALL', description:'build for what')
+    }
 
     stages {
-        stage('SAY') {
-            steps {
-                sh "echo $env.id"
-                sh "echo $env.password"
-                sh "echo $build_target"
-            }
+        stage('TEST PARAMS') {
+            echo "$params.ID"
+            echo "$params.build_target"
+            echo "$params.menu_target"
         }
     }
 }
+
