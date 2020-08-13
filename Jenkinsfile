@@ -7,7 +7,7 @@ pipeline {
 
     parameters {
         choice(name:'ID', choices:['root','user0','QA'], description:'ID')
-        choice(name:'build_target', choices:['IRIS-E2E','IRIS-E2E-SAAS'] description:'Build_target')
+        choice(name:'build_target', choices:['IRIS-E2E','IRIS-E2E-SAAS'], description:'Build_target')
         String(name:'menu_target', defaultValue:'ALL', description:'build for what')
     }
 
