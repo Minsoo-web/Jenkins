@@ -13,9 +13,11 @@ pipeline {
 
     stages {
         stage('TEST PARAMS') {
-            echo "$params.ID"
-            echo "$params.build_target"
-            echo "$params.menu_target"
+            steps {
+                echo "$params.ID"
+                echo "$params.build_target"
+                echo "$params.menu_target"
+            }   
         }
     }
 }
