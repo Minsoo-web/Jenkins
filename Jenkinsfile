@@ -6,7 +6,7 @@ pipeline {
     }
 
     parameters {
-        choice(name:'ID', choices:['root','user0','QA'], description:'ID')
+        choice(name:'ID', choices:['root','user0','QA','ALL'], description:'ID')
         choice(name:'build_target', choices:['IRIS-E2E','IRIS-E2E-SAAS','SAMPLE-E2E'], description:'Build_target')
         string(name:'menu_target', defaultValue:'ALL', description:'build for what')
     }
