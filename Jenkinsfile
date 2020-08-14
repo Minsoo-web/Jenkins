@@ -12,7 +12,21 @@ pipeline {
     }
 
     stages {
+        stage('BEFORE BUILD JOB') {
+            // 빌드를 하기 전 테스트를 진행할 side 파일들을 파라미터에 맞게 수정합니다.
+            steps {
+                sh "ls"
+                dir ('TRE')  {
+                        git branch: 'master',
+                        credentialsId: '8049ffe0-f4fb-4bfe-ab97-574e07244a32',
+                        url: 'https://github.com/Minsoo-web/TRE.git'
+                }
+                sh "ls"
+            }
+        }
+
         stage('BUILD JOB') {
+            // 전처리가 끝난 다음 job을 전달합니다.
             steps {
                 build(
                     job: "$params.build_target",
@@ -28,6 +42,12 @@ pipeline {
                 echo "$params.build_target"
                 echo "$params.menu_target"
             }   
+        }
+
+        stage('AFTER BUILD JOB') {
+            steps {
+                sh "ls"
+            }
         }
     }
 }
