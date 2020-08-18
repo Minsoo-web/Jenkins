@@ -43,8 +43,9 @@ class Container:
             )
         except FileNotFoundError as e:
             print(e)
-            print(f'command: {command}')
-            logging.error(str(e) + f'\n\tcommand: {command}')
+            print('command: {command}'.format(command=command))
+            logging.error(
+                str(e) + '\n\tcommand: {command}'.format(command=command))
             sys.exit(1)
         else:
             print(color('✔', 'green'))
@@ -65,7 +66,8 @@ class Container:
         print(color('Extract only directory name from full path', 'yellow'), end=' ')
         response = sorted(list({os.path.dirname(x)
                                 for x in data.splitlines()}))
-        logging.info(f'A total of {len(response)} directories were searched.')
+        logging.info('A total of {response} directories were searched.'.format(
+            response=len(response)))
         print(color('✔', 'green'))
         return response
 
@@ -84,7 +86,8 @@ class Container:
         print(color('✔', 'green'))
         print(color('Copy:', 'yellow'), color('Directory copy', 'blue'))
         for dir_path in tqdm(path):
-            shutil.copytree(src=dir_path, dst=f'{self.dist_path}/{dir_path}')
+            shutil.copytree(src=dir_path, dst='{dist_path}/{dir_path}'.format(
+                dist_path=self.dist_path, dir_path=dir_path))
         print(color('✔', 'green'))
 
     def __call__(self) -> NoReturn:
@@ -93,7 +96,7 @@ class Container:
         Returns:
             NoReturn: [description]
         """
-        
+
         if os.path.isdir(self.dist_path):
             shutil.rmtree(self.dist_path)
         os.mkdir(self.dist_path)
