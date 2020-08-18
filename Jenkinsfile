@@ -41,7 +41,7 @@ pipeline {
         stage('BUILD IMAGE') { 
             steps {
                 script {
-                    if (build_target == "IRIS-E2E-SAAS"){
+                    if (build_target == "SAMPLE-E2E"){
                         sh"""
                         docker run -itd --privileged -p 4444:4444 --name ${SAAS_CONTAINER_NAME} ${BASE_IMAGE_NAME}
                         docker cp dist/IRIS-E2E-SAAS ${SAAS_CONTAINER_NAME}:/root/IRIS-E2E/IRIS-E2E-SAAS
