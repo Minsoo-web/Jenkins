@@ -9,10 +9,11 @@ pipeline {
         choice(name:'ID', choices:['root','user0','QA','ALL'], description:'ID')
         choice(name:'build_target', choices:['IRIS-E2E','IRIS-E2E-SAAS','SAMPLE-E2E'], description:'Build_target')
         string(name:'menu_target', defaultValue:'ALL', description:'build for what')
+        string(name:'container_number',defaultValue:"$BUILD_NUMBER", description:'build_number for container name')
     }
 
     environment {
-        SAAS_CONTAINER_NAME = "new-iris-e2e-saas-${BUILD_NUMBER}",
+        SAAS_CONTAINER_NAME = "new-iris-e2e-saas-${params.container_number}"
         BASE_IMAGE_NAME = "e2e-base-image:latest"
     }
 
