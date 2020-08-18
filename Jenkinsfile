@@ -11,17 +11,43 @@ pipeline {
         string(name:'menu_target', defaultValue:'ALL', description:'build for what')
     }
 
+    environment {
+        SAAS_CONTAINER_NAME = "new-iris-e2e-saas-${BUILD_NUMBER}",
+        BASE_IMAGE_NAME = "e2e-base-image:latest"
+    }
+
     stages {
-        stage('BEFORE BUILD JOB') {
+        stage('BUILD CONTAINER') {
             // 빌드를 하기 전 테스트를 진행할 side 파일들을 파라미터에 맞게 수정합니다.
             steps {
-                sh "ls"
-                dir ('TRE')  {
+                dir ('IRIS-E2E-SAAS')  {
                         git branch: 'master',
                         credentialsId: '8049ffe0-f4fb-4bfe-ab97-574e07244a32',
-                        url: 'https://github.com/Minsoo-web/TRE.git'
+                        url: 'https://github.com/mobigen/IRIS-E2E-SAAS.git'
+
+                        sh"""
+                        # side file 만 추출
+                        python3 ../docker_build.py
+                        """
+                        sh"""
+                        ls
+                        cd dist
+                        ls
+                        """
                 }
-                sh "ls"
+            }
+        }
+
+        stage('BUILD IMAGE') { 
+            steps {
+                script {
+                    if (build_target == "IRIS-E2E-SAAS"){
+                        sh"""
+                        docker run -itd --privileged -p 4444:4444 --name ${SAAS_CONTAINER_NAME} ${BASE_IMAGE_NAME}
+                        docker cp dist/IRIS-E2E-SAAS ${SAAS_CONTAINER_NAME}:/root/IRIS-E2E/IRIS-E2E-SAAS
+                        """
+                    }
+                }
             }
         }
 

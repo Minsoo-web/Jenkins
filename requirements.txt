@@ -1,0 +1,10 @@
+ansicolors
+bs4
+flask
+openpyxl
+pandas
+pymysql
+requests
+selenium
+simplejson
+xmltodict
