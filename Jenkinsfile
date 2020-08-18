@@ -28,12 +28,7 @@ pipeline {
 
                         sh"""
                         # side file 만 추출
-                        python3 ../docker_build.py
-                        """
-                        sh"""
-                        ls
-                        cd dist
-                        ls
+                        python3 ./docker_build.py
                         """
                 }
             }
