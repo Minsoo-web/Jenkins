@@ -27,6 +27,9 @@ pipeline {
 
         stage('BUILD JOB') {
             // 전처리가 끝난 다음 job을 전달합니다.
+            when {
+                triggeredBy "UserCause"
+            }
             steps {
                 build(
                     job: "$params.build_target",
