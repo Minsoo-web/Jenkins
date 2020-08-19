@@ -34,7 +34,7 @@ pipeline {
             steps {
                 script {
                     sh"""
-                    docker run -itd --name $BUILD_TAG -w /root -v $pwd:/root $PYTHON_BASE_IMAGE
+                    docker run -itd --name $BUILD_TAG -w /root -v $WORKSPACE:/root $PYTHON_BASE_IMAGE
                     docker exec -t $BUILD_TAG e2e-master setting --build_target $params.build_target --menu_target $params.menu_target --user $params.user && \
                         e2e-master get_side
                     # docker rm -f $BUILD_TAG
