@@ -15,6 +15,7 @@ pipeline {
     environment {
         SAAS_CONTAINER_NAME = "new-iris-e2e-saas-${params.container_number}"
         BASE_IMAGE_NAME = "e2e-base-image:latest"
+        PYTHON_BASE_IMAGE = "e2e-python-base-image:latest"
     }
 
     stages {
@@ -25,12 +26,6 @@ pipeline {
                         git branch: 'master',
                         credentialsId: '8049ffe0-f4fb-4bfe-ab97-574e07244a32',
                         url: 'https://github.com/mobigen/IRIS-E2E-SAAS.git'
-
-                        sh"""
-                        # side file 만 추출
-                        cd ..
-                        python3 ./setting_container.py
-                        """
                 }
             }
         }
@@ -40,7 +35,13 @@ pipeline {
                 script {
                     if (build_target == "SAMPLE-E2E"){
                         sh"""
+                        docker run -itd --name ${BUILD_TAG} -w /root -v $(pwd):/root ${PYTHON_BASE_IMAGE}
+                        docker exec -t $(BUILD_TAG) core 
+                        docker rm -f $(BUILD_TAG)
+
+                        # SAAS 컨테이너 생성
                         docker run -itd --privileged -p 4444:4444 --name ${SAAS_CONTAINER_NAME} ${BASE_IMAGE_NAME}
+                        # 파이썬 컨테이너에서 정리된 side 및 qa-script 를 SAAS_CONTAINER_NAME 컨테이너로 옮긴다. 
                         docker cp dist/IRIS-E2E-SAAS ${SAAS_CONTAINER_NAME}:/root/IRIS-E2E/IRIS-E2E-SAAS
                         """
                     }
