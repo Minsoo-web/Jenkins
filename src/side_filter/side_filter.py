@@ -18,9 +18,10 @@ logging.basicConfig(
 )
 
 
-class Container:
-    def __init__(self) -> None:
-        self.side_command = "find IRIS-E2E-SAAS -type f -name '*.side'"
+class SideFilter:
+    def __init__(self, build_target: str, menu_target: str) -> None:
+        self.side_command = f"find {build_target} -type f -name '*.side'"
+        self.menu_target = menu_target
         self.dist_path = 'dist'
 
     def call(self, command: str) -> str:
@@ -85,9 +86,12 @@ class Container:
             'dist directory exist', 'blue'), end=' ')
         print(color('✔', 'green'))
         print(color('Copy:', 'yellow'), color('Directory copy', 'blue'))
-        for dir_path in tqdm(path):
-            shutil.copytree(src=dir_path, dst='{dist_path}/{dir_path}'.format(
-                dist_path=self.dist_path, dir_path=dir_path))
+        if self.menu_target == 'All':
+            for dir_path in tqdm(path):
+                shutil.copytree(src=dir_path, dst='{dist_path}/{dir_path}'.format(
+                    dist_path=self.dist_path, dir_path=dir_path))
+        else:
+            print("준비 안 됨")
         print(color('✔', 'green'))
 
     def __call__(self) -> NoReturn:
@@ -105,7 +109,3 @@ class Container:
         list_path = self.split_file_list(data)
         self.copy_files(list_path)
         self.copy_files(['IRIS-E2E-SAAS/qa-script'])
-
-
-if __name__ == "__main__":
-    Container()()
