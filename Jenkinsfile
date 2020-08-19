@@ -6,7 +6,6 @@ pipeline {
     }
 
     parameters {
-        choice(name:'ID', choices:['root','user0','QA','ALL'], description:'ID')
         choice(name:'build_target', choices:['IRIS-E2E','IRIS-E2E-SAAS','SAMPLE-E2E'], description:'Build_target')
         string(name:'menu_target', defaultValue:'All', description:'build for what')
         string(name:'user', defaultValue:'All', description: 'build for who')
@@ -36,7 +35,7 @@ pipeline {
                 script {
                     sh"""
                     docker run -itd --name $BUILD_TAG -w /root -v $pwd:/root $PYTHON_BASE_IMAGE
-                    docker exec -t $BUILD_TAG ./core setting --build_target IRIS-E2E-SAAS --menu_target $params.menu_target --user $params.user && \
+                    docker exec -t $BUILD_TAG source ./setup.sh && ./core setting --build_target $params.build_target --menu_target $params.menu_target --user $params.user && \
                         ./core get_side
                     docker rm -f $BUILD_TAG
 
