@@ -48,7 +48,7 @@ class Master(object):
     def find_files(self, pathname: str) -> list:
         """
         """
-        return glob.glob(pathname=pathname)
+        return glob.glob(pathname=pathname, recursive=True)
 
     def get_file_content(self, path: str, *, option='json') -> Union[str, dict, None]:
         res: Optional[str] = None

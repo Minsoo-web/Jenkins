@@ -8,12 +8,13 @@ pipeline {
     parameters {
         choice(name:'ID', choices:['root','user0','QA','ALL'], description:'ID')
         choice(name:'build_target', choices:['IRIS-E2E','IRIS-E2E-SAAS','SAMPLE-E2E'], description:'Build_target')
-        string(name:'menu_target', defaultValue:'ALL', description:'build for what')
+        string(name:'menu_target', defaultValue:'All', description:'build for what')
+        string(name:'user', defaultValue:'All', description: 'build for who')
         string(name:'container_number',defaultValue:"$BUILD_NUMBER", description:'build_number for container name')
     }
 
     environment {
-        SAAS_CONTAINER_NAME = "new-iris-e2e-saas-${params.container_number}"
+        E2E_CONTAINER_NAME = "new-iris-e2e-${params.container_number}"
         BASE_IMAGE_NAME = "e2e-base-image:latest"
         PYTHON_BASE_IMAGE = "e2e-python-base-image:latest"
     }
@@ -33,18 +34,17 @@ pipeline {
         stage('BUILD IMAGE') { 
             steps {
                 script {
-                    if (build_target == "SAMPLE-E2E"){
-                        sh"""
-                        docker run -itd --name ${BUILD_TAG} -w /root -v $(pwd):/root ${PYTHON_BASE_IMAGE}
-                        docker exec -t $(BUILD_TAG) core 
-                        docker rm -f $(BUILD_TAG)
+                    sh"""
+                    docker run -itd --name ${BUILD_TAG} -w /root -v $(pwd):/root ${PYTHON_BASE_IMAGE}
+                    docker exec -t $(BUILD_TAG) ./core setting --build_target IRIS-E2E-SAAS --menu_target $params.menu_target --user $params.user && \
+                        ./core get_side
+                    docker rm -f $(BUILD_TAG)
 
-                        # SAAS 컨테이너 생성
-                        docker run -itd --privileged -p 4444:4444 --name ${SAAS_CONTAINER_NAME} ${BASE_IMAGE_NAME}
-                        # 파이썬 컨테이너에서 정리된 side 및 qa-script 를 SAAS_CONTAINER_NAME 컨테이너로 옮긴다. 
-                        docker cp dist/IRIS-E2E-SAAS ${SAAS_CONTAINER_NAME}:/root/IRIS-E2E/IRIS-E2E-SAAS
-                        """
-                    }
+                    # SAAS 컨테이너 생성
+                    docker run -itd --privileged -p 4444:4444 --name ${E2E_CONTAINER_NAME} ${BASE_IMAGE_NAME}
+                    # 파이썬 컨테이너에서 정리된 side 및 qa-script 를 SAAS_CONTAINER_NAME 컨테이너로 옮긴다. 
+                    docker cp dist/$params.build_target ${E2E_CONTAINER_NAME}:/root/
+                    """
                 }
             }
         }

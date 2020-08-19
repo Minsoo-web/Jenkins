@@ -19,9 +19,13 @@ logging.basicConfig(
 
 
 class SideFilter:
-    def __init__(self, build_target: str, menu_target: str) -> None:
+    def __init__(self, build_target: str, menu_target: str, user: str) -> None:
         self.side_command = f"find {build_target} -type f -name '*.side'"
+
+        self.build_target = build_target
         self.menu_target = menu_target
+        self.user = user
+
         self.dist_path = 'dist'
 
     def call(self, command: str) -> str:
@@ -65,12 +69,17 @@ class SideFilter:
             List[str]: 중복이 제거된 폴더 경로
         """
         print(color('Extract only directory name from full path', 'yellow'), end=' ')
+
         response = sorted(list({os.path.dirname(x)
                                 for x in data.splitlines()}))
         logging.info('A total of {response} directories were searched.'.format(
             response=len(response)))
         print(color('✔', 'green'))
-        return response
+
+        if self.build_target == 'IRIS-E2E':
+            return ['IRIS-E2E/IRIS-E2E']
+        else:
+            return response
 
     def copy_files(self, path: List[str]) -> NoReturn:
         """폴더 경로를 배열로 받아 루트 경로의 /dist 로 복사해온다.
@@ -86,13 +95,14 @@ class SideFilter:
             'dist directory exist', 'blue'), end=' ')
         print(color('✔', 'green'))
         print(color('Copy:', 'yellow'), color('Directory copy', 'blue'))
-        if self.menu_target == 'All':
+        try:
             for dir_path in tqdm(path):
                 shutil.copytree(src=dir_path, dst='{dist_path}/{dir_path}'.format(
                     dist_path=self.dist_path, dir_path=dir_path))
-        else:
-            print("준비 안 됨")
-        print(color('✔', 'green'))
+            print(color("Complete Copy ✔", 'green'))
+        except FileNotFoundError as e:
+            print(color('😡 Invaild Params', 'red'))
+            print("Please Check Params")
 
     def __call__(self) -> NoReturn:
         """[summary]
@@ -101,11 +111,31 @@ class SideFilter:
             NoReturn: [description]
         """
 
+        # dist 폴더 삭제 후 재생성
         if os.path.isdir(self.dist_path):
             shutil.rmtree(self.dist_path)
         os.mkdir(self.dist_path)
 
+        # 필요한 side 파일들의 경로만 뽑아서
         data = self.call(self.side_command)
-        list_path = self.split_file_list(data)
+
+        if self.build_target == 'IRIS-E2E-SAAS':
+            if self.user.lower() == 'admin':
+                if self.menu_target.lower() != 'all':
+                    list_path = [f'IRIS-E2E-SAAS/ADMIN/{self.menu_target}']
+                else:
+                    list_path = [f'IRIS-E2E-SAAS/ADMIN/']
+            else:
+                if self.user == 'all':
+                    list_path = self.split_file_list(data)
+                else:
+                    list_path = [f'IRIS-E2E-SAAS/{self.menu_target}/{self.user}']
+        else:
+            if self.menu_target.lower() == 'all':
+                list_path = self.split_file_list(data)
+            else:
+                # 특정 메뉴만 테스트를 진행해야 함
+                list_path = [f'IRIS-E2E/IRIS-E2E/{self.menu_target}']
+
         self.copy_files(list_path)
-        self.copy_files(['IRIS-E2E-SAAS/qa-script'])
+        self.copy_files([f'{self.build_target}/qa-script'])
