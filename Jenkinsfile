@@ -35,15 +35,15 @@ pipeline {
             steps {
                 script {
                     sh"""
-                    docker run -itd --name ${BUILD_TAG} -w /root -v $(pwd):/root ${PYTHON_BASE_IMAGE}
-                    docker exec -t $(BUILD_TAG) ./core setting --build_target IRIS-E2E-SAAS --menu_target $params.menu_target --user $params.user && \
+                    docker run -itd --name $BUILD_TAG -w /root -v $pwd:/root $PYTHON_BASE_IMAGE
+                    docker exec -t $BUILD_TAG ./core setting --build_target IRIS-E2E-SAAS --menu_target $params.menu_target --user $params.user && \
                         ./core get_side
-                    docker rm -f $(BUILD_TAG)
+                    docker rm -f $BUILD_TAG
 
                     # SAAS 컨테이너 생성
-                    docker run -itd --privileged -p 4444:4444 --name ${E2E_CONTAINER_NAME} ${BASE_IMAGE_NAME}
+                    docker run -itd --privileged -p 4444:4444 --name $E2E_CONTAINER_NAME $BASE_IMAGE_NAME
                     # 파이썬 컨테이너에서 정리된 side 및 qa-script 를 SAAS_CONTAINER_NAME 컨테이너로 옮긴다. 
-                    docker cp dist/$params.build_target ${E2E_CONTAINER_NAME}:/root/
+                    docker cp dist/$params.build_target $E2E_CONTAINER_NAME:/root/
                     """
                 }
             }
