@@ -10,11 +10,11 @@ pipeline {
 
     parameters {
         choice(name:'build_target', choices:['IRIS-E2E','IRIS-E2E-SAAS'], description:'Build_target')
-        string(name:'menu_target', defaultValue:'All', description:'build for what')
-        string(name:'user', defaultValue:'All', description: 'build for who')
-        // string(name:'container_number',defaultValue:"$NEW_BUILD_NUMBER", description:'build_number for container name')
+        string(name:'menu_target', defaultValue:'All', description:'Build for what')
+        string(name:'user', defaultValue:'All', description: 'Build for who')
+        string(name:'AUTO', defaultValue:'FALSE', description: 'TRUE : only TimeTrigger ⏰')
     }
-
+    
     environment {
         E2E_CONTAINER_NAME = "new-iris-e2e"
         BASE_IMAGE_NAME = "e2e-base-image:latest"
@@ -53,7 +53,7 @@ pipeline {
                 # ---> 삭제 후 재생성 로직을 삭제 ---> 항상 띄워 놓고 파일만 변경하는 식으로 로직 변경
                 # docker run -itd --privileged -p 4444:4444 --name $E2E_CONTAINER_NAME $BASE_IMAGE_NAME
 
-                # [STEP 03] 파이썬 컨테이너에서 정리된 side 및 qa-script 를 SAAS_CONTAINER_NAME 컨테이너로 옮긴다.
+                # [STEP 03] 파이썬 컨테이너에서 정리된 side 및 qa-script 를 new-iris-e2e 컨테이너로 옮긴다.
 
                 # 복사하기 전 이전 빌드가 남겨 놓은 side 폴더를 삭제
                 docker exec -t ${E2E_CONTAINER_NAME} rm -rf /root/${params.build_target}
@@ -65,7 +65,12 @@ pipeline {
 
         stage('BUILD JOB-FOR-SAAS') {
             // 전처리가 끝난 다음 job을 전달합니다.
-            when { environment name: 'build_target', value: 'IRIS-E2E-SAAS' }
+            when { 
+                allOf {
+                    environment name: 'build_target', value: 'IRIS-E2E-SAAS' 
+                    environment name: 'AUTO', value: 'FALSE' 
+                }                
+            }
 
             steps {
                 build(
