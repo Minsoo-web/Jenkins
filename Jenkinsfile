@@ -1,5 +1,5 @@
-def INT_BUILD_NUMBER = BUILD_NUMBER as Integer
-def NEW_BUILD_NUMBER = INT_BUILD_NUMBER + 1
+// def INT_BUILD_NUMBER = BUILD_NUMBER as Integer
+// def NEW_BUILD_NUMBER = INT_BUILD_NUMBER + 1
 
 pipeline {
     agent any
@@ -12,11 +12,11 @@ pipeline {
         choice(name:'build_target', choices:['IRIS-E2E','IRIS-E2E-SAAS'], description:'Build_target')
         string(name:'menu_target', defaultValue:'All', description:'build for what')
         string(name:'user', defaultValue:'All', description: 'build for who')
-        string(name:'container_number',defaultValue:"$NEW_BUILD_NUMBER", description:'build_number for container name')
+        // string(name:'container_number',defaultValue:"$NEW_BUILD_NUMBER", description:'build_number for container name')
     }
 
     environment {
-        E2E_CONTAINER_NAME = "new-iris-e2e-${params.container_number}"
+        E2E_CONTAINER_NAME = "new-iris-e2e"
         BASE_IMAGE_NAME = "e2e-base-image:latest"
         PYTHON_BASE_IMAGE = "e2e-python-base-image:latest"
     }
@@ -43,8 +43,8 @@ pipeline {
                     docker rm -f $BUILD_TAG
 
                     # E2E 컨테이너 생성
-                    docker run -itd --privileged -p 4444:4444 --name $E2E_CONTAINER_NAME $BASE_IMAGE_NAME
-                    # 파이썬 컨테이너에서 정리된 side 및 qa-script 를 SAAS_CONTAINER_NAME 컨테이너로 옮긴다. 
+                    # docker run -itd --privileged -p 4444:4444 --name $E2E_CONTAINER_NAME $BASE_IMAGE_NAME
+                    # 파이썬 컨테이너에서 정리된 side 및 qa-script 를 SAAS_CONTAINER_NAME 컨테이너로 옮긴다.                    
                     docker cp dist/$params.build_target $E2E_CONTAINER_NAME:/root/
                     """
                 }
