@@ -37,7 +37,7 @@ pipeline {
                     docker run -itd --name $BUILD_TAG -w /root -v /root/cicd-jenkins/workspace/minsoo-test:/root $PYTHON_BASE_IMAGE
                     docker exec -t $BUILD_TAG e2e-master setting --build_target $params.build_target --menu_target $params.menu_target --user $params.user
                     docker exec -t $BUILD_TAG e2e-master get_side
-                    # docker rm -f $BUILD_TAG
+                    docker rm -f $BUILD_TAG
 
                     # E2E 컨테이너 생성
                     docker run -itd --privileged -p 4444:4444 --name $E2E_CONTAINER_NAME $BASE_IMAGE_NAME
@@ -57,12 +57,6 @@ pipeline {
                 build(
                     job: "$params.build_target",
                     wait: true,
-                    parameters: [
-                        string(
-                            name: 'AUTO', 
-                            value: 'NOT_AUTO'
-                        )
-                    ]
                 )
                 echo "$params.ID"
                 echo "$params.build_target"
