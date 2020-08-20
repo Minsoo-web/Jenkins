@@ -1,3 +1,4 @@
+def NEW_BUILD_NUMBER = BUILD_NUMBER + 1
 pipeline {
     agent any
 
@@ -9,7 +10,7 @@ pipeline {
         choice(name:'build_target', choices:['IRIS-E2E','IRIS-E2E-SAAS'], description:'Build_target')
         string(name:'menu_target', defaultValue:'All', description:'build for what')
         string(name:'user', defaultValue:'All', description: 'build for who')
-        string(name:'container_number',defaultValue:"$BUILD_NUMBER", description:'build_number for container name')
+        string(name:'container_number',defaultValue:"$NEW_BUILD_NUMBER", description:'build_number for container name')
     }
 
     environment {
