@@ -6,7 +6,7 @@ pipeline {
     }
 
     parameters {
-        choice(name:'build_target', choices:['IRIS-E2E','IRIS-E2E-SAAS','SAMPLE-E2E'], description:'Build_target')
+        choice(name:'build_target', choices:['IRIS-E2E','IRIS-E2E-SAAS'], description:'Build_target')
         string(name:'menu_target', defaultValue:'All', description:'build for what')
         string(name:'user', defaultValue:'All', description: 'build for who')
         string(name:'container_number',defaultValue:"$BUILD_NUMBER", description:'build_number for container name')
@@ -35,14 +35,14 @@ pipeline {
                 script {
                     sh"""
                     docker run -itd --name $BUILD_TAG -w /root -v /root/cicd-jenkins/workspace/minsoo-test:/root $PYTHON_BASE_IMAGE
-                    docker exec -t $BUILD_TAG e2e-master setting --build_target IRIS-E2E-SAAS --menu_target $params.menu_target --user $params.user
+                    docker exec -t $BUILD_TAG e2e-master setting --build_target $params.build_target --menu_target $params.menu_target --user $params.user
                     docker exec -t $BUILD_TAG e2e-master get_side
                     docker rm -f $BUILD_TAG
 
                     # E2E 컨테이너 생성
                     docker run -itd --privileged -p 4444:4444 --name $E2E_CONTAINER_NAME $BASE_IMAGE_NAME
                     # 파이썬 컨테이너에서 정리된 side 및 qa-script 를 SAAS_CONTAINER_NAME 컨테이너로 옮긴다. 
-                    docker cp dist/IRIS-E2E-SAAS $E2E_CONTAINER_NAME:/root/
+                    docker cp dist/$params.build_target $E2E_CONTAINER_NAME:/root/
                     """
                 }
             }
@@ -55,7 +55,8 @@ pipeline {
             }
             steps {
                 build(
-                    job: "$params.build_target",
+                    // 테스트를 위한 임시 하드코딩
+                    job: "SAMPLE-E2E",
                     wait: true,
                 )
                 echo "$params"
