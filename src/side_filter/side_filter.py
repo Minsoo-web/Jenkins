@@ -126,7 +126,7 @@ class SideFilter:
                 else:
                     list_path = [f'IRIS-E2E-SAAS/ADMIN/']
             else:
-                if self.user == 'all':
+                if self.user.lower() == 'all':
                     list_path = self.split_file_list(data)
                 else:
                     list_path = [f'IRIS-E2E-SAAS/{self.menu_target}/{self.user}']
