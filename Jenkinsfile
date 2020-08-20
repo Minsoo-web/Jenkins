@@ -33,28 +33,35 @@ pipeline {
             }
         }
 
-        stage('BUILD IMAGE') { 
+        stage('BUILD IMAGE') {
             steps {
-                script {
-                    sh"""
-                    docker run -itd --name $BUILD_TAG -w /root -v /root/cicd-jenkins/workspace/minsoo-test:/root $PYTHON_BASE_IMAGE
-                    docker exec -t $BUILD_TAG e2e-master setting --build_target $params.build_target --menu_target $params.menu_target --user $params.user
-                    docker exec -t $BUILD_TAG e2e-master get_side
-                    docker rm -f $BUILD_TAG
+                sh"""
+                # [STEP 01] python 파일 실행을 위한 컨테이너 하나를 띄운다. (volume으로 workspace와 연결)
+                docker run -itd --name ${BUILD_TAG} -w /root -v /root/cicd-jenkins/workspace/minsoo-test:/root ${PYTHON_BASE_IMAGE}
 
-                    # E2E 컨테이너 생성
-                    # docker run -itd --privileged -p 4444:4444 --name $E2E_CONTAINER_NAME $BASE_IMAGE_NAME
-                    # 파이썬 컨테이너에서 정리된 side 및 qa-script 를 SAAS_CONTAINER_NAME 컨테이너로 옮긴다.                    
-                    docker cp dist/$params.build_target $E2E_CONTAINER_NAME:/root/
-                    """
-                }
+                # [STEP 02] 컨테이너 안에서 filtering을 해주고 컨테이너를 삭제한다.
+                docker exec -t ${BUILD_TAG} e2e-master setting --build_target ${params.build_target} --menu_target ${params.menu_target} --user ${params.user}
+                docker exec -t ${BUILD_TAG} e2e-master get_side
+                docker rm -f ${BUILD_TAG}
+
+                # E2E 컨테이너 생성 
+                # ---> 삭제 후 재생성 로직을 삭제 ---> 항상 띄워 놓고 파일만 변경하는 식으로 로직 변경
+                # docker run -itd --privileged -p 4444:4444 --name $E2E_CONTAINER_NAME $BASE_IMAGE_NAME
+
+                # [STEP 03] 파이썬 컨테이너에서 정리된 side 및 qa-script 를 SAAS_CONTAINER_NAME 컨테이너로 옮긴다.
+
+                # 복사하기 전 이전 빌드가 남겨 놓은 side 폴더를 삭제
+                docker exec -t ${E2E_CONTAINER_NAME} rm -rf /root/${params.build_target}
+                # filtering이 끝난 side 폴더를 컨테이너 안으로 복사
+                docker cp dist/${params.build_target} ${E2E_CONTAINER_NAME}:/root/${params.build_target}
+                """
             }
         }
 
         stage('BUILD JOB') {
             // 전처리가 끝난 다음 job을 전달합니다.
             when { environment name: 'build_target', value: 'IRIS-E2E-SAAS' }
-            
+
             steps {
                 build(
                     // 테스트를 위한 임시 하드코딩
@@ -62,7 +69,7 @@ pipeline {
                     wait: true,
                 )
                 echo "$params"
-            }   
+            }
         }
 
         stage('AFTER BUILD JOB') {
@@ -76,4 +83,3 @@ pipeline {
         }
     }
 }
-
