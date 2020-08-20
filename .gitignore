@@ -8,6 +8,7 @@ __pycache__/
 
 config.json
 IRIS-E2E-SAAS/
+IRIS-E2E/
 
 # C extensions
 *.so
