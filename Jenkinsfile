@@ -71,6 +71,10 @@ pipeline {
         stage('AFTER BUILD JOB') {
             steps {
                 sh "ls"
+                script {
+                    def buildCause = currentBuild.getBuildCauses()[0].shortDescription
+                    echo "Current build was caused by: ${buildCause}\n"
+                }
             }
         }
     }
