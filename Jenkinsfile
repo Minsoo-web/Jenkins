@@ -50,9 +50,6 @@ pipeline {
 
         stage('BUILD JOB') {
             // 전처리가 끝난 다음 job을 전달합니다.
-            when {
-                triggeredBy "UserCause"
-            }
             steps {
                 build(
                     // 테스트를 위한 임시 하드코딩
