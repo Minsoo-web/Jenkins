@@ -129,7 +129,11 @@ class SideFilter:
                 if self.user.lower() == 'all':
                     list_path = self.split_file_list(data)
                 else:
-                    list_path = [f'IRIS-E2E-SAAS/{self.menu_target}/{self.user}']
+                    if self.menu_target.lower() == 'all':
+                        list_path = [f'IRIS-E2E-SAAS/IRIS-E2E-SAAS-ENG/{self.user}',f'IRIS-E2E-SAAS/IRIS-E2E-SAAS-KOR/{self.user}']
+                    else:
+                        # 메뉴와 유저 모두 명시 된 경우
+                        list_path = [f'IRIS-E2E-SAAS/{self.menu_target}/{self.user}']
         else:
             if self.menu_target.lower() == 'all':
                 list_path = self.split_file_list(data)
