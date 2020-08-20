@@ -72,7 +72,7 @@ pipeline {
             }
         }
 
-        stage('BUILD JOB-FOR-SAAS') {
+        stage('BUILD JOB-FOR-E2E') {
             // 전처리가 끝난 다음 job을 전달합니다.
             when { environment name: 'build_target', value: 'IRIS-E2E' }
 
