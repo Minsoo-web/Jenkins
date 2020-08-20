@@ -58,7 +58,7 @@ pipeline {
             }
         }
 
-        stage('BUILD JOB') {
+        stage('BUILD JOB-FOR-SAAS') {
             // 전처리가 끝난 다음 job을 전달합니다.
             when { environment name: 'build_target', value: 'IRIS-E2E-SAAS' }
 
@@ -71,6 +71,21 @@ pipeline {
                 echo "$params"
             }
         }
+
+        stage('BUILD JOB-FOR-SAAS') {
+            // 전처리가 끝난 다음 job을 전달합니다.
+            when { environment name: 'build_target', value: 'IRIS-E2E' }
+
+            steps {
+                build(
+                    // 테스트를 위한 임시 하드코딩
+                    job: "SAMPLE-IRIS-E2E",
+                    wait: true,
+                )
+                echo "$params"
+            }
+        }
+
 
         stage('AFTER BUILD JOB') {
             steps {
