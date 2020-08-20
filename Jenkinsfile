@@ -30,6 +30,11 @@ pipeline {
                         credentialsId: '8049ffe0-f4fb-4bfe-ab97-574e07244a32',
                         url: 'https://github.com/mobigen/IRIS-E2E-SAAS.git'
                 }
+                dir ('IRIS-E2E')  {
+                        git branch: 'master',
+                        credentialsId: '8049ffe0-f4fb-4bfe-ab97-574e07244a32',
+                        url: 'https://github.com/mobigen/IRIS-E2E.git'
+                }
             }
         }
 

@@ -135,6 +135,7 @@ class SideFilter:
                         # 메뉴와 유저 모두 명시 된 경우
                         list_path = [f'IRIS-E2E-SAAS/{self.menu_target}/{self.user}']
         else:
+            # IRIS-E2E
             if self.menu_target.lower() == 'all':
                 list_path = self.split_file_list(data)
             else:
