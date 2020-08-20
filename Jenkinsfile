@@ -35,8 +35,8 @@ pipeline {
                 script {
                     sh"""
                     docker run -itd --name $BUILD_TAG -w /root -v /root/cicd-jenkins/workspace/minsoo-test:/root $PYTHON_BASE_IMAGE
-                    docker exec -t $BUILD_TAG e2e-master setting --build_target $params.build_target --menu_target $params.menu_target --user $params.user && \
-                        e2e-master get_side
+                    docker exec -t $BUILD_TAG e2e-master setting --build_target $params.build_target --menu_target $params.menu_target --user $params.user
+                    docker exec -t $BUILD_TAG e2e-master get_side
                     # docker rm -f $BUILD_TAG
 
                     # E2E 컨테이너 생성

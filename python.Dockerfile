@@ -12,7 +12,7 @@ ENV LANGUAGE=ko_KR.UTF-8
 ENV PYTHONPATH=/root
 
 RUN pip install --upgrade pip && \
-    pip install ansicolors tqdm
+    pip install ansicolors tqdm fire
 
 RUN apt -y update && \
     apt -y upgrade
