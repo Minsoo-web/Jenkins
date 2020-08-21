@@ -59,6 +59,7 @@ pipeline {
                 docker exec -t ${E2E_CONTAINER_NAME} rm -rf /root/${params.build_target}
                 # filtering이 끝난 side 폴더를 컨테이너 안으로 복사
                 docker cp dist/${params.build_target} ${E2E_CONTAINER_NAME}:/root/${params.build_target}
+                docker cp chrome.deb ${E2E_CONTAINER_NAME}:/root/${params.build_target}
                 """
             }
         }
