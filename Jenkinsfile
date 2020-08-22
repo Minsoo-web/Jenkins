@@ -24,16 +24,13 @@ pipeline {
     stages {
         stage('BUILD CONTAINER') {
             // 빌드를 하기 전 테스트를 진행할 side 파일들을 파라미터에 맞게 수정합니다.
+            
             steps {
-                dir ('IRIS-E2E-SAAS')  {
+
+                dir ('${params.build_target}')  {
                         git branch: 'master',
                         credentialsId: '8049ffe0-f4fb-4bfe-ab97-574e07244a32',
-                        url: 'https://github.com/mobigen/IRIS-E2E-SAAS.git'
-                }
-                dir ('IRIS-E2E')  {
-                        git branch: 'master',
-                        credentialsId: '8049ffe0-f4fb-4bfe-ab97-574e07244a32',
-                        url: 'https://github.com/mobigen/IRIS-E2E.git'
+                        url: 'https://github.com/mobigen/${params.build_target}.git'
                 }
             }
         }
