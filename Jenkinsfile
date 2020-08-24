@@ -27,10 +27,10 @@ pipeline {
             
             steps {
 
-                dir ('${params.build_target}')  {
+                dir ("${params.build_target}")  {
                         git branch: 'master',
                         credentialsId: '8049ffe0-f4fb-4bfe-ab97-574e07244a32',
-                        url: 'https://github.com/mobigen/${params.build_target}.git'
+                        url: "https://github.com/mobigen/${params.build_target}.git"
                 }
             }
         }
