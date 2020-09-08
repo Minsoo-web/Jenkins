@@ -24,7 +24,6 @@ pipeline {
     stages {
         stage('BUILD CONTAINER') {
             // 빌드를 하기 전 테스트를 진행할 side 파일들을 파라미터에 맞게 수정합니다.
-            
             steps {
                 dir ("${params.build_target}")  {
                         git branch: 'IRIS-E2E-SAASv2',
