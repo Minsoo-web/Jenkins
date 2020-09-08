@@ -104,25 +104,18 @@ pipeline {
                 # 테스트가 끝난 후 생성된 qa-report 폴더를 호스트 워킹디렉토리로 가져온다.
                 docker cp new-iris-e2e:/root/${params.build_target}/qa-report .
                 # 프로젝트별 TIMO conf 파일을 호스트 워킹디렉토리로 가져온다.
+
                 mv ${params.build_target}/data .
                 
-                docker exec -t test-timo timo setting json
-                docker exec -t test-timo timo get name
-                docker exec -t test-timo timo get version
-                docker exec -t test-timo timo parse E2Etest
-                docker exec -t test-timo timo get score
+                docker run -itd --name ${params.build_target}-timo -v /root/cicd-jenkins/workspace/minsoo-test:/root timo-mobigen:latest
 
-                docker rm -f test-timo
+                docker exec -t ${params.build_target}-timo timo setting json
+                docker exec -t ${params.build_target}-timo timo get name
+                docker exec -t ${params.build_target}-timo timo get version
+                docker exec -t ${params.build_target}-timo timo parse E2Etest
+                docker exec -t ${params.build_target}-timo timo get score
 
-                # docker run -itd --name ${params.build_target}-timo -v /root/cicd-jenkins/workspace/minsoo-test:/root timo-mobigen:latest
-
-                # docker exec -t ${params.build_target}-timo timo setting json
-                # docker exec -t ${params.build_target}-timo timo get name
-                # docker exec -t ${params.build_target}-timo timo get version
-                # docker exec -t ${params.build_target}-timo timo parse E2Etest
-                # docker exec -t ${params.build_target}-timo timo get score
-
-                # docker rm -f ${params.build_target}-timo
+                docker rm -f ${params.build_target}-timo
                 """
             }
         }
