@@ -122,18 +122,22 @@ class SideFilter:
         if self.build_target == 'IRIS-E2E-SAAS':
             if self.user.lower() == 'admin':
                 if self.menu_target.lower() != 'all':
-                    list_path = [f'IRIS-E2E-SAAS/ADMIN/{self.menu_target}']
+                    # ✔ user : admin / menu : Something
+                    list_path = [f'IRIS-E2E-SAAS/tests/admin/{self.menu_target}']
                 else:
-                    list_path = [f'IRIS-E2E-SAAS/ADMIN/']
+                    # ✔ user : admin / menu : all
+                    list_path = [f'IRIS-E2E-SAAS/tests/admin/']
             else:
                 if self.user.lower() == 'all':
+                    # ✔ user : all / menu : all
                     list_path = self.split_file_list(data)
                 else:
+                    # ✔ user : anonymous or authed_user / menu : all
                     if self.menu_target.lower() == 'all':
-                        list_path = [f'IRIS-E2E-SAAS/IRIS-E2E-SAAS-ENG/{self.user}',f'IRIS-E2E-SAAS/IRIS-E2E-SAAS-KOR/{self.user}']
+                        list_path = [f'IRIS-E2E-SAAS/tests/public/{self.user}/']
                     else:
-                        # 메뉴와 유저 모두 명시 된 경우
-                        list_path = [f'IRIS-E2E-SAAS/{self.menu_target}/{self.user}']
+                        # user : anonymous or authed_user / menu : something
+                        list_path = [f'IRIS-E2E-SAAS/tests/public/{self.user}/{self.menu_target}']
         else:
             # IRIS-E2E
             if self.menu_target.lower() == 'all':
@@ -143,4 +147,4 @@ class SideFilter:
                 list_path = [f'IRIS-E2E/IRIS-E2E/{self.menu_target}']
 
         self.copy_files(list_path)
-        self.copy_files([f'{self.build_target}/qa-script'])
+        self.copy_files([f'{self.build_target}/script'])
