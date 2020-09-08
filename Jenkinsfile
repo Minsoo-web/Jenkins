@@ -26,9 +26,8 @@ pipeline {
             // 빌드를 하기 전 테스트를 진행할 side 파일들을 파라미터에 맞게 수정합니다.
             
             steps {
-
                 dir ("${params.build_target}")  {
-                        git branch: 'master',
+                        git branch: 'IRIS-E2E-SAASv2',
                         credentialsId: '8049ffe0-f4fb-4bfe-ab97-574e07244a32',
                         url: "https://github.com/mobigen/${params.build_target}.git"
                 }
@@ -82,7 +81,12 @@ pipeline {
 
         stage('BUILD JOB-FOR-E2E') {
             // 전처리가 끝난 다음 job을 전달합니다.
-            when { environment name: 'build_target', value: 'IRIS-E2E' }
+            when { 
+                allOf {
+                    environment name: 'build_target', value: 'IRIS-E2E' 
+                    environment name: 'AUTO', value: 'FALSE' 
+                }                
+            }
 
             steps {
                 build(
