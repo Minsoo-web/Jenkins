@@ -7,8 +7,8 @@ pipeline {
 
     parameters {
         choice(name:'build_target', choices:['IRIS-E2E','IRIS-E2E-SAAS'], description:'E2E 테스트를 진행할 프로젝트를 작성해주세요')
-        string(name:'menu_target', defaultValue:'all', description:'테스트가 필요한 메뉴를 써주세요 (side 폴더 이름) : e.g all / 00.MAIN / 01.USER')
         string(name:'user', defaultValue:'all', description: '테스트 유저의 권한을 선택해주세요 : all / admin / anonymous / authed_user')
+        string(name:'menu_target', defaultValue:'all', description:'테스트가 필요한 메뉴를 써주세요 (side 폴더 이름) : e.g all / 00.MAIN / 01.USER')
         string(name:'IP', defaultValue:'http://192.168.102.114', description: '테스트를 진행할 IP를 입력해주세요')
         string(name:'PORT', defaultValue:'80', description: '테스트를 진행할 IP의 PORT 번호를 입력해주세요')
     }
