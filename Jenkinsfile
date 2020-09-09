@@ -117,6 +117,7 @@ pipeline {
         always {
             junit 'qa-report/*.xml'
             sh"""
+            docker exec -t ${BUILD_TAG} pip install simplejson
             docker exec -t ${BUILD_TAG} cp ./PARAMS-E2E.cicd.conf ./ITI/conf
             docker exec -t ${BUILD_TAG} python ./ITI/src/insert_Build_Data.py ${params.build_target}
             docker rm -f ${BUILD_TAG}
