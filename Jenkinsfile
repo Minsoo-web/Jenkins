@@ -1,6 +1,3 @@
-// def INT_BUILD_NUMBER = BUILD_NUMBER as Integer
-// def NEW_BUILD_NUMBER = INT_BUILD_NUMBER + 1
-
 pipeline {
     agent any
 
@@ -9,10 +6,11 @@ pipeline {
     }
 
     parameters {
-        choice(name:'build_target', choices:['IRIS-E2E','IRIS-E2E-SAAS'], description:'Build_target')
-        string(name:'menu_target', defaultValue:'All', description:'Build for what')
-        string(name:'user', defaultValue:'All', description: 'Build for who')
-        string(name:'AUTO', defaultValue:'FALSE', description: 'TRUE : only TimeTrigger ⏰')
+        choice(name:'build_target', choices:['IRIS-E2E','IRIS-E2E-SAAS'], description:'E2E 테스트를 진행할 프로젝트를 작성해주세요')
+        string(name:'menu_target', defaultValue:'all', description:'테스트가 필요한 메뉴를 써주세요 (side 폴더 이름) : e.g all / 00.MAIN / 01.USER')
+        string(name:'user', defaultValue:'all', description: '테스트 유저의 권한을 선택해주세요 : all / admin / anonymous / authed_user')
+        string(name:'IP', defaultValue:'http://192.168.102.114', description: '테스트를 진행할 IP를 입력해주세요')
+        string(name:'PORT', defaultValue:'80', description: '테스트를 진행할 IP의 PORT 번호를 입력해주세요')
     }
     
     environment {
@@ -23,7 +21,6 @@ pipeline {
 
     stages {
         stage('BUILD CONTAINER') {
-            // 빌드를 하기 전 테스트를 진행할 side 파일들을 파라미터에 맞게 수정합니다.
             steps {
                 dir ("${params.build_target}")  {
                         git branch: 'IRIS-E2E-SAASv2',
@@ -33,7 +30,8 @@ pipeline {
             }
         }
 
-        stage('BUILD IMAGE') {
+        stage('FILTER OUT SIDE') {
+            // 빌드를 하기 전 테스트를 진행할 side 파일들을 파라미터에 맞게 수정합니다.
             steps {
                 sh"""
                 # [STEP 01] python 파일 실행을 위한 컨테이너 하나를 띄운다. (volume으로 workspace와 연결)
@@ -59,40 +57,30 @@ pipeline {
             }
         }
 
-        stage('BUILD JOB-FOR-SAAS') {
+        stage('E2E TEST FOR IRIS-E2E-SAAS') {
             // 전처리가 끝난 다음 job을 전달합니다.
             when { 
                 allOf {
                     environment name: 'build_target', value: 'IRIS-E2E-SAAS' 
-                    environment name: 'AUTO', value: 'FALSE' 
+                    // environment name: 'AUTO', value: 'FALSE' 
                 }                
             }
-
             steps {
-                build(
-                    // 테스트를 위한 임시 하드코딩
-                    job: "SAMPLE-E2E",
-                    wait: true,
-                )
-                echo "$params"
+                sh"""
+                docker exec -t -w /root/IRIS-E2E-SAAS new-iris-e2e script/modules/side_runner/run_side.sh
+                """                
             }
         }
 
-        stage('BUILD JOB-FOR-E2E') {
+        stage('E2E TEST FOR IRIS-E2E') {
             // 전처리가 끝난 다음 job을 전달합니다.
             when { 
                 allOf {
                     environment name: 'build_target', value: 'IRIS-E2E' 
-                    environment name: 'AUTO', value: 'FALSE' 
+                    // environment name: 'AUTO', value: 'FALSE' 
                 }                
             }
-
             steps {
-                build(
-                    // 테스트를 위한 임시 하드코딩
-                    job: "SAMPLE-IRIS-E2E",
-                    wait: true,
-                )
                 echo "$params"
             }
         }
@@ -107,7 +95,7 @@ pipeline {
 
                 mv ${params.build_target}/data .
                 
-                docker run -itd --name ${params.build_target}-timo -v /root/cicd-jenkins/workspace/minsoo-test:/root timo-mobigen:latest
+                docker run -itd --name ${params.build_target}-timo -v /root/cicd-jenkins/workspace/minsoo-test:/root timo-mobigen:parame2e
 
                 docker exec -t ${params.build_target}-timo timo setting json
                 docker exec -t ${params.build_target}-timo timo get name
