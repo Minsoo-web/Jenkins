@@ -22,6 +22,11 @@ pipeline {
     stages {
         stage('BUILD CONTAINER') {
             steps {
+                dir ('ITI')  {
+                        git branch: 'master',
+                        credentialsId: '8049ffe0-f4fb-4bfe-ab97-574e07244a32',
+                        url: 'https://github.com/EricLeeMbg/ITI.git'
+                }
                 dir ("${params.build_target}")  {
                         git branch: 'IRIS-E2E-SAASv2',
                         credentialsId: '8049ffe0-f4fb-4bfe-ab97-574e07244a32',
@@ -106,6 +111,16 @@ pipeline {
                 docker rm -f ${params.build_target}-timo
                 """
             }
+        }
+    }
+    post {
+        always {
+            junit 'qa-report/*.xml'
+            sh"""
+            cp ./PARAMS-E2E.cicd.conf ./ITI/conf
+            python ./ITI/src/insert_Build_Data.py ${params.build_target}
+            """
+            build job: 'Bren-Trigger', parameters: [string(name: 'Latest_Build_Number', value: env.BUILD_NUMBER), string(name: 'Upstream_Project_Name', value: env.JOB_NAME)]
         }
     }
 }
