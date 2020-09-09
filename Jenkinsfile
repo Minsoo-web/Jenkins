@@ -45,7 +45,7 @@ pipeline {
                 # [STEP 02] 컨테이너 안에서 filtering을 해주고 컨테이너를 삭제한다.
                 docker exec -t ${BUILD_TAG} e2e-master setting --build_target ${params.build_target} --menu_target ${params.menu_target} --user ${params.user}
                 docker exec -t ${BUILD_TAG} e2e-master get_side
-                docker rm -f ${BUILD_TAG}
+                # 지우는 단계를 post 이후로 변경
 
                 # E2E 컨테이너 생성 
                 # ---> 삭제 후 재생성 로직을 삭제 ---> 항상 띄워 놓고 파일만 변경하는 식으로 로직 변경
@@ -117,8 +117,9 @@ pipeline {
         always {
             junit 'qa-report/*.xml'
             sh"""
-            cp ./PARAMS-E2E.cicd.conf ./ITI/conf
-            python ./ITI/src/insert_Build_Data.py ${params.build_target}
+            docker exec -t ${BUILD_TAG} cp ./PARAMS-E2E.cicd.conf ./ITI/conf
+            docker exec -t ${BUILD_TAG} python ./ITI/src/insert_Build_Data.py ${params.build_target}
+            docker rm -f ${BUILD_TAG}
             """
             build job: 'Bren-Trigger', parameters: [string(name: 'Latest_Build_Number', value: env.BUILD_NUMBER), string(name: 'Upstream_Project_Name', value: env.JOB_NAME)]
         }

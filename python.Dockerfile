@@ -1,22 +1,13 @@
-FROM python:3.8.1
-
-USER root
+FROM timo-mobigen:parame2e
 
 ENV HOME=/root
 
 WORKDIR /root
 
-ENV TZ=Asia/Seoul
-ENV LANG=ko_KR.UTF-8
-ENV LANGUAGE=ko_KR.UTF-8
-ENV PYTHONPATH=/root
+ENV PYTHONPATH=/root:${PYTHONPATH}
 
 RUN pip install --upgrade pip && \
-    pip install ansicolors tqdm fire
-
-RUN apt -y update && \
-    apt -y upgrade
-
+    pip install tqdm requests
 
 RUN echo '#!/bin/bash\npython /root/src/core.py "$@"' > /usr/bin/e2e-master && \
     chmod +x /usr/bin/e2e-master
